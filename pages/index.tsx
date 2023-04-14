@@ -1,6 +1,11 @@
 import {
   Autocomplete,
+  Backdrop,
   Button,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   FormControl,
   InputLabel,
   MenuItem,
@@ -21,38 +26,50 @@ type Student = {
 };
 
 type PostFormPayload = {
-  participantId: number
-  isComing: boolean
-  email: string
-  phoneNumber: number
-}
+  participantId: number;
+  isComing: boolean;
+  email: string;
+  phoneNumber: string;
+};
 
 export default function Home() {
   const [selectedName, setSelectedName] = useState<string>("");
   const [listStudent, setListStudent] = useState<Array<string>>([]);
-  const [isAvailable, setIsAvailable] = useState(0);
+  const [loading, setLoading] = useState<boolean>(false)
+  const [openSnack, setOpenSnack] = useState<boolean>(false);
 
-  function postFormData(data: { email: any; phoneNumber: any; available: any; }) {
+  function postFormData(data: {
+    email: any;
+    phoneNumber: any;
+    available: any;
+  }) {
+    setTimeout(() => {
+    }, 2000)
     try {
+      setLoading(true)
       const payload: PostFormPayload = {
         email: data.email || "",
-        phoneNumber: Number(data.phoneNumber),
+        phoneNumber: String(data.phoneNumber),
         isComing: Boolean(data.available),
-        participantId: Number(selectedName.split("-")[0])
-      }
+        participantId: Number(selectedName.split("-")[0]),
+      };
       Fetcher.post("/form", payload).then(res => {
-        console.log(res)
+        setSelectedName("")
         formik.resetForm()
+        setOpenSnack(true);
+        setLoading(false)
+        // console.log(res)
       })
-    } catch(err) {
-      console.log(err)
+    } catch (err) {
+      setLoading(false)
+      console.log(err);
     }
   }
   function getFormData() {
     Fetcher.get("/form-content").then((res) => {
       const list = res.data.map((std: { name: any; id: any }, idx: number) => {
-        return std.id + "-" + std.name
-      })
+        return std.id + "-" + std.name;
+      });
       setListStudent(list);
     });
   }
@@ -71,10 +88,11 @@ export default function Home() {
   });
 
   return (
-    <div className="bg-accent flex-column flex-auto h-screen p-4 space-y-4">
+    <div className="bg-white flex-column flex-auto h-screen p-4 space-y-4">
+      <h1 className="text-black underline">DivertyOne Bukber Form</h1>
       <form onSubmit={formik.handleSubmit} className="space-y-4">
         <div className="space-y-4">
-          <h3>Tell us about you</h3>
+          <h3 className="text-black">Tell us about you</h3>
           <FormControl fullWidth>
             <Autocomplete
               color="secondary"
@@ -108,17 +126,49 @@ export default function Home() {
           </FormControl>
         </div>
 
-        <h3>Tell us how to reach you</h3>
+        <h3 className="text-black">Tell us how to reach you</h3>
         <div>
           <FormControl fullWidth className="space-y-4">
-            <TextField label="Email" name="email" value={formik.values.email} onChange={formik.handleChange}/>
-            <TextField label="Phone Number" name="phoneNumber" value={formik.values.phoneNumber} onChange={formik.handleChange}/>
+            <TextField
+              label="Email"
+              name="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+            />
+            <TextField
+              label="Phone Number"
+              name="phoneNumber"
+              value={formik.values.phoneNumber}
+              onChange={formik.handleChange}
+            />
           </FormControl>
         </div>
 
-        <Button color="primary" variant="contained" fullWidth type="submit">
+        <Button color="primary" variant="contained" fullWidth type="submit" className="text-black">
           Submit
         </Button>
+
+        <Dialog open={openSnack} onClose={() => setOpenSnack(false)}>
+          <DialogTitle>Data submitted</DialogTitle>
+          <DialogContent>
+            <p>Thank you, Your registration is now complete.</p>
+            <p>Please follow the payment instruction and event guideline</p>
+            <p>See you there!</p>
+          </DialogContent>
+        </Dialog>
+        {/* <Snackbar
+          open={openSnack}
+          autoHideDuration={1000}
+          onClose={() => setOpenSnack(false)}
+        >
+          <Alert severity="success">Your data successfully submitted</Alert>
+        </Snackbar> */}
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme: any) => theme.zIndex.drawer + 1 }}
+          open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </form>
     </div>
   );
