@@ -16,7 +16,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useEffect, useState } from "react";
 import { Fetcher } from "@/helper/axios";
 import { useFormik } from "formik";
@@ -50,7 +50,7 @@ export default function Home() {
     available: any;
   }) {
     if (!selectedName) {
-      return
+      return;
     }
     try {
       setLoading(true);
@@ -101,22 +101,7 @@ export default function Home() {
 
   return (
     <div className="bg-white flex-column flex-auto h-screen p-4 space-y-4">
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
-          <Typography>Event Detail</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            18 April 2023 <br/>
-            BigBerry Tegal <br/>
-            Urunan: 100k
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
+      <EventDetail/>
       <h1 className="text-black underline">DivertyOne Bukber Form</h1>
       <form onSubmit={formik.handleSubmit} className="space-y-4">
         <div className="space-y-4">
@@ -214,5 +199,26 @@ export default function Home() {
         </Backdrop>
       </form>
     </div>
+  );
+}
+
+function EventDetail() {
+  return (
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1a-content"
+        id="panel1a-header"
+      >
+        <Typography>Event Detail</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Typography>
+          18 April 2023 <br />
+          BigBerry Tegal <br />
+          Urunan: 100k
+        </Typography>
+      </AccordionDetails>
+    </Accordion>
   );
 }
