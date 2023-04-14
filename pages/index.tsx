@@ -122,17 +122,24 @@ export default function Home() {
   });
 
   const uploadImage = (res: ChangeEvent<HTMLInputElement>) => {
-    setLoading(true)
-    uploadManager.uploadFile(
-      res.target.files[0],
-    ).then(res => {
-      setLoading(false)
-      setImageUrl(res.fileUrl)
-      console.log(res)
-    }).catch(err => {
+    try {
+      setLoading(true)
+      if (res.target.files) {
+        uploadManager.uploadFile(
+          res.target.files[0],
+        ).then(res => {
+          setLoading(false)
+          setImageUrl(res.fileUrl)
+          console.log(res)
+        }).catch(err => {
+          setLoading(false)
+          console.log(err)
+        })
+      }
+    } catch (err) {
       setLoading(false)
       console.log(err)
-    })
+    }
   }
   return (
     <div className="bg-white flex-column flex-auto h-screen p-4 space-y-4">
