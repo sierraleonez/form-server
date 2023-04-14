@@ -2,6 +2,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Alert,
   Autocomplete,
   Backdrop,
   Button,
@@ -18,6 +19,7 @@ import {
   ListItemText,
   MenuItem,
   Select,
+  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
@@ -44,7 +46,7 @@ type PostFormPayload = {
   isComing: boolean;
   email: string;
   phoneNumber: string;
-  paymentPicUrl: string
+  paymentPicUrl: string;
   paymentMethod: string;
 };
 
@@ -53,15 +55,16 @@ export default function Home() {
   const [listStudent, setListStudent] = useState<Array<string>>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [openSnack, setOpenSnack] = useState<boolean>(false);
-  const [imageUrl, setImageUrl] = useState<string>("")
+  const [openSuccess, setOpenSuccess] = useState<boolean>(false);
+  const [imageUrl, setImageUrl] = useState<string>("");
 
   function postFormData(data: {
     email: any;
     phoneNumber: any;
     available: any;
-    paymentMethod: string
+    paymentMethod: string;
   }) {
-    console.log(data)
+    console.log(data);
     if (!selectedName) {
       return;
     }
@@ -73,18 +76,20 @@ export default function Home() {
         isComing: Boolean(data.available),
         participantId: Number(selectedName.split("-")[0]),
         paymentMethod: data.paymentMethod,
-        paymentPicUrl: imageUrl
+        paymentPicUrl: imageUrl,
       };
-      Fetcher.post("/form", payload).then((res) => {
-        setImageUrl("")
-        setSelectedName("");
-        formik.resetForm();
-        setOpenSnack(true);
-        setLoading(false);
-      }).catch(err => {
-        setLoading(false)
-        console.log(err)
-      });
+      Fetcher.post("/form", payload)
+        .then((res) => {
+          setImageUrl("");
+          setSelectedName("");
+          formik.resetForm();
+          setOpenSnack(true);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          console.log(err);
+        });
     } catch (err) {
       setLoading(false);
       console.log(err);
@@ -107,7 +112,7 @@ export default function Home() {
     email: string().email("Enter valid email"),
     phoneNumber: number(),
     available: boolean().required("Please fill your availability"),
-    paymentMethod: string().required("Silahkan isi metode pembayaran")
+    paymentMethod: string().required("Silahkan isi metode pembayaran"),
   });
 
   const formik = useFormik({
@@ -115,7 +120,7 @@ export default function Home() {
       available: 0,
       email: "",
       phoneNumber: "",
-      paymentMethod: ""
+      paymentMethod: "",
     },
     onSubmit: (res) => postFormData(res),
     validationSchema: validationSchema,
@@ -123,24 +128,25 @@ export default function Home() {
 
   const uploadImage = (res: ChangeEvent<HTMLInputElement>) => {
     try {
-      setLoading(true)
+      setLoading(true);
       if (res.target.files) {
-        uploadManager.uploadFile(
-          res.target.files[0],
-        ).then(res => {
-          setLoading(false)
-          setImageUrl(res.fileUrl)
-          console.log(res)
-        }).catch(err => {
-          setLoading(false)
-          console.log(err)
-        })
+        uploadManager
+          .uploadFile(res.target.files[0])
+          .then((res) => {
+            setLoading(false);
+            setImageUrl(res.fileUrl);
+            console.log(res);
+          })
+          .catch((err) => {
+            setLoading(false);
+            console.log(err);
+          });
       }
     } catch (err) {
-      setLoading(false)
-      console.log(err)
+      setLoading(false);
+      console.log(err);
     }
-  }
+  };
   return (
     <div className="bg-white flex-column flex-auto h-screen p-4 space-y-4">
       <h1 className="text-black underline">DivertyOne Bukber Form</h1>
@@ -215,29 +221,34 @@ export default function Home() {
         <h3>Pembayaran</h3>
         <div className="space-y-4">
           <FormControl fullWidth>
-            <InputLabel id="payment-method-label">Metode Pembayaran?</InputLabel>
+            <InputLabel id="payment-method-label">
+              Metode Pembayaran?
+            </InputLabel>
             <Select
               labelId="payment-method-label"
               onChange={formik.handleChange}
               defaultValue={""}
               error={
-                formik.touched.paymentMethod && Boolean(formik.errors.paymentMethod)
+                formik.touched.paymentMethod &&
+                Boolean(formik.errors.paymentMethod)
               }
               id="paymentMethod"
               name="paymentMethod"
               label="Metode Pembayaran?"
               value={formik.values.paymentMethod}
             >
-              {PaymentMethods.map(method =>(
-                <MenuItem value={method.method} key={method.method}>{method.method}</MenuItem>
+              {PaymentMethods.map((method) => (
+                <MenuItem value={method.method} key={method.method}>
+                  {method.method}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
           <h4>Upload Bukti Pembayaran</h4>
-          <input accept="image/*" type="file" onChange={uploadImage}/>
+          <input accept="image/*" type="file" onChange={uploadImage} />
         </div>
         <EventDetail />
-        <PaymentDetail />
+        <PaymentDetail openSnack={() => setOpenSuccess(true)}/>
 
         <Button
           color="primary"
@@ -266,6 +277,15 @@ export default function Home() {
         >
           <CircularProgress color="inherit" />
         </Backdrop>
+        <Snackbar open={openSuccess} autoHideDuration={3000} onClose={() => setOpenSuccess(false)}>
+          <Alert
+            onClose={() => setOpenSuccess(false)}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            Nomer Rekening disalin ke clipboard
+          </Alert>
+        </Snackbar>
       </form>
     </div>
   );
@@ -292,8 +312,9 @@ function EventDetail() {
   );
 }
 
-function PaymentDetail() {
+function PaymentDetail({openSnack}: {openSnack: () => void}) {
   function copyToCB(number: string) {
+    openSnack()
     navigator.clipboard.writeText(number);
   }
   return (
