@@ -31,6 +31,7 @@ import { useFormik } from "formik";
 import { boolean, number, object, string } from "yup";
 import { PaymentMethods } from "@/constant/paymentMethod";
 import { uploadManager } from "@/helper/imageUpload";
+import Image from "next/image";
 
 type Student = {
   id: number;
@@ -185,7 +186,7 @@ export default function Home() {
               defaultValue={null}
             >
               <MenuItem value={1}>Yes</MenuItem>
-              <MenuItem value={0}>No</MenuItem>
+              <MenuItem value={1}>Pasti Yes</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -312,10 +313,14 @@ function EventDetail() {
         <Typography>Informasi Acara</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <img
+        <Image
           src="https://upcdn.io/12a1y8c/raw/uploads/2023/04/png_20230415_135214_0000.png"
-          width={'100%'}
-          height={'auto'}
+          alt="invitation"
+          width={240}
+          height={360}
+        />
+        <img
+
         />
       </AccordionDetails>
     </Accordion>
