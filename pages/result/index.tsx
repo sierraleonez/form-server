@@ -39,6 +39,7 @@ function Result() {
 			),
 		},
 		{ field: "phone_number", headerName: "Phone Number", width: 150 },
+		{ field: "food_option", headerName: "Makanan", width: 150 },
 	], []);
 	const [selectedImage, setSelectedImage] = useState<string>("")
   const [participants, setParticipants] = useState<Array<Participant>>([]);

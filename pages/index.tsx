@@ -24,14 +24,18 @@ import {
   Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { CreditCard } from "@mui/icons-material";
+import { CreditCard, Download } from "@mui/icons-material";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Fetcher } from "@/helper/axios";
 import { useFormik } from "formik";
 import { boolean, number, object, string } from "yup";
 import { PaymentMethods } from "@/constant/paymentMethod";
 import { uploadManager } from "@/helper/imageUpload";
+import ReactMarkdown from 'react-markdown'
 import Image from "next/image";
+import { info_markdown } from "@/constant/markdown";
+import saveAs from "file-saver";
+import { FoodOption } from "@/constant/types";
 
 type Student = {
   id: number;
@@ -49,6 +53,7 @@ type PostFormPayload = {
   phoneNumber: string;
   paymentPicUrl: string;
   paymentMethod: string;
+  foodOption: string;
 };
 
 export default function Home() {
@@ -64,6 +69,7 @@ export default function Home() {
     phoneNumber: any;
     available: any;
     paymentMethod: string;
+    foodOption: string;
   }) {
     console.log(data);
     if (!selectedName) {
@@ -78,6 +84,7 @@ export default function Home() {
         participantId: Number(selectedName.split("-")[0]),
         paymentMethod: data.paymentMethod,
         paymentPicUrl: imageUrl,
+        foodOption: data.foodOption
       };
       Fetcher.post("/form", payload)
         .then((res) => {
@@ -114,6 +121,7 @@ export default function Home() {
     phoneNumber: number(),
     available: boolean().required("Please fill your availability"),
     paymentMethod: string().required("Silahkan isi metode pembayaran"),
+    foodOption: string().required("Silahkan memilih menu makanan")
   });
 
   const formik = useFormik({
@@ -122,6 +130,7 @@ export default function Home() {
       email: "",
       phoneNumber: "",
       paymentMethod: "",
+      foodOption: ""
     },
     onSubmit: (res) => postFormData(res),
     validationSchema: validationSchema,
@@ -172,7 +181,7 @@ export default function Home() {
             />
           </FormControl>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Available?</InputLabel>
+            <InputLabel id="demo-simple-select-label">Dateng nda?</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               onChange={formik.handleChange}
@@ -187,6 +196,25 @@ export default function Home() {
             >
               <MenuItem value={1}>Yes</MenuItem>
               <MenuItem value={1}>Pasti Yes</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Mau makan apa?</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              onChange={formik.handleChange}
+              error={
+                formik.touched.foodOption && Boolean(formik.errors.foodOption)
+              }
+              id="foodOption"
+              name="foodOption"
+              label="Mau makan apa?"
+              value={formik.values.foodOption}
+              defaultValue={""}
+            >
+              {FoodOption.map(opt => (
+                <MenuItem value={opt}>{opt}</MenuItem>
+              ))}
             </Select>
           </FormControl>
         </div>
@@ -246,15 +274,15 @@ export default function Home() {
             </Select>
           </FormControl>
           <h4 className="text-black">Upload Bukti Pembayaran</h4>
-          <Button variant="contained" color="info">
-            <Typography className="text-black">Upload</Typography>
-          <input hidden accept="image/*" type="file" onChange={uploadImage} />
+          <Button variant="contained" color="info" component="label">
+            Upload
+            <input hidden accept="image/*" type="file" onChange={uploadImage} />
           </Button>
         </div>
         <div className="space-y-4 mt-4">
           <h3 className="text-black">Informasi</h3>
-        <EventDetail />
-        <PaymentDetail openSnack={() => setOpenSuccess(true)} />
+          <EventDetail />
+          <PaymentDetail openSnack={() => setOpenSuccess(true)} />
         </div>
 
         <Button
@@ -312,16 +340,13 @@ function EventDetail() {
       >
         <Typography>Informasi Acara</Typography>
       </AccordionSummary>
-      <AccordionDetails>
-        <Image
-          src="https://upcdn.io/12a1y8c/raw/uploads/2023/04/png_20230415_135214_0000.png"
-          alt="invitation"
-          width={240}
-          height={360}
-        />
-        <img
+      <AccordionDetails className="space-y-4">
+        <ReactMarkdown children={info_markdown}></ReactMarkdown>
 
-        />
+        <h3>WAJIB DOWNLOAD INVITATION DIBAWAH DAN UPLOAD INVITATION KE IG</h3>
+        <Button variant="contained" startIcon={<Download/>} onClick={() => { saveAs("https://upcdn.io/12a1y8c/raw/uploads/2023/04/Invitation%20Card%20Fix.jpg", `invitation.jpg`) }}>
+						<Typography className="text-black">Download INVITATION</Typography>
+					</Button>
       </AccordionDetails>
     </Accordion>
   );
@@ -329,12 +354,12 @@ function EventDetail() {
 
 function PaymentDetail({ openSnack }: { openSnack: () => void }) {
   async function copyToCB(number: string) {
-    if ('clipboard' in navigator) {
+    if ("clipboard" in navigator) {
       await navigator.clipboard.writeText(number);
     } else {
-      document.execCommand('copy', false, number)
+      document.execCommand("copy", false, number);
     }
-    openSnack(); 
+    openSnack();
   }
   return (
     <Accordion>
