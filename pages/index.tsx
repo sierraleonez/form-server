@@ -213,7 +213,7 @@ export default function Home() {
               defaultValue={""}
             >
               {FoodOption.map(opt => (
-                <MenuItem value={opt}>{opt}</MenuItem>
+                <MenuItem key={opt} value={opt}>{opt}</MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -341,8 +341,7 @@ function EventDetail() {
         <Typography>Informasi Acara</Typography>
       </AccordionSummary>
       <AccordionDetails className="space-y-4">
-        <ReactMarkdown children={info_markdown}></ReactMarkdown>
-
+        <ReactMarkdown>{info_markdown}</ReactMarkdown>
         <h3>WAJIB DOWNLOAD INVITATION DIBAWAH DAN UPLOAD INVITATION KE IG</h3>
         <Button variant="contained" startIcon={<Download/>} onClick={() => { saveAs("https://upcdn.io/12a1y8c/raw/uploads/2023/04/Invitation%20Card%20Fix.jpg", `invitation.jpg`) }}>
 						<Typography className="text-black">Download INVITATION</Typography>
