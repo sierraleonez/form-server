@@ -218,8 +218,8 @@ export default function Home() {
           </FormControl>
         </div>
 
-        <h3>Pembayaran</h3>
-        <div className="space-y-4">
+        <h3 className="text-black">Pembayaran</h3>
+        <div className="space-y-4 mb-8">
           <FormControl fullWidth>
             <InputLabel id="payment-method-label">
               Metode Pembayaran?
@@ -244,11 +244,17 @@ export default function Home() {
               ))}
             </Select>
           </FormControl>
-          <h4>Upload Bukti Pembayaran</h4>
-          <input accept="image/*" type="file" onChange={uploadImage} />
+          <h4 className="text-black">Upload Bukti Pembayaran</h4>
+          <Button variant="contained" color="info">
+            <Typography className="text-black">Upload</Typography>
+          <input hidden accept="image/*" type="file" onChange={uploadImage} />
+          </Button>
         </div>
+        <div className="space-y-4 mt-4">
+          <h3 className="text-black">Informasi</h3>
         <EventDetail />
-        <PaymentDetail openSnack={() => setOpenSuccess(true)}/>
+        <PaymentDetail openSnack={() => setOpenSuccess(true)} />
+        </div>
 
         <Button
           color="primary"
@@ -277,7 +283,11 @@ export default function Home() {
         >
           <CircularProgress color="inherit" />
         </Backdrop>
-        <Snackbar open={openSuccess} autoHideDuration={3000} onClose={() => setOpenSuccess(false)}>
+        <Snackbar
+          open={openSuccess}
+          autoHideDuration={3000}
+          onClose={() => setOpenSuccess(false)}
+        >
           <Alert
             onClose={() => setOpenSuccess(false)}
             severity="success"
@@ -302,20 +312,24 @@ function EventDetail() {
         <Typography>Informasi Acara</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Typography>
-          18 April 2023 <br />
-          BigBerry Tegal <br />
-          Urunan: 100k
-        </Typography>
+        <img
+          src="https://upcdn.io/12a1y8c/raw/uploads/2023/04/png_20230415_135214_0000.png"
+          width={'100%'}
+          height={'auto'}
+        />
       </AccordionDetails>
     </Accordion>
   );
 }
 
-function PaymentDetail({openSnack}: {openSnack: () => void}) {
-  function copyToCB(number: string) {
-    openSnack()
-    navigator.clipboard.writeText(number);
+function PaymentDetail({ openSnack }: { openSnack: () => void }) {
+  async function copyToCB(number: string) {
+    if ('clipboard' in navigator) {
+      await navigator.clipboard.writeText(number);
+    } else {
+      document.execCommand('copy', false, number)
+    }
+    openSnack(); 
   }
   return (
     <Accordion>
@@ -340,7 +354,7 @@ function PaymentDetail({openSnack}: {openSnack: () => void}) {
                   <CreditCard />
                 </ListItemIcon>
                 <ListItemText
-                  primary={`${method.method} an ${method.holder}`}
+                  primary={`${method.method} an ${method.holder} - ${method.number}`}
                 />
               </ListItemButton>
             </ListItem>

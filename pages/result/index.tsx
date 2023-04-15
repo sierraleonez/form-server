@@ -11,6 +11,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Download } from '@mui/icons-material'
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
+import { saveAs } from 'file-saver'
 
 function Result() {
 	const columns: GridColDef[] = useMemo(() => [
@@ -55,19 +56,22 @@ function Result() {
     getParticipants();
   }, []);
   return (
-    <div className="bg-white">
+    <div className="bg-white h-full min-h-screen p-4 space-y-4">
+			<h1 className="text-black">Data Peserta Bukber</h1>
       <DataGrid columns={columns} autoHeight rows={participants} />
 			<Dialog open={Boolean(selectedImage)} onClose={() => setSelectedImage("")}>
 				<DialogTitle>Bukti Pembayaran</DialogTitle>
 				<DialogContent>
+					<div className="space-y-4">
 					<img
 						src={selectedImage}
 						width={"100%"}
 						height={'auto'}
 					/>
-					<Button variant="contained" startIcon={<Download/>}>
+					<Button variant="contained" startIcon={<Download/>} onClick={() => { saveAs(selectedImage, `bukti-pembayaran-${Date.now()}`) }}>
 						<Typography>Download</Typography>
 					</Button>
+					</div>
 				</DialogContent>
 			</Dialog>
     </div>
