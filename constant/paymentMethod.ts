@@ -1,12 +1,3 @@
-const p = [
-"BRI 302801042842536  a.n Febiyanti",
-"BCA 0471546533 a.n Nur Fadila Romadhona",
-"MANDIRI 1370019758248 a.n Widya Salsabila N",
-"DANA 085975343039 a.n Febiyanti",
-"OVO 082328904181 a.n Salsabiila Alya Safitri",
-"Gopay 082328904181 a.n Salsabiila Alya Safitri",
-"Shopeepay 081386180787 a.n nuralifyamaulidah",
-]
 
 export type PaymentMethod = {
   method: string
@@ -50,4 +41,9 @@ export const PaymentMethods: PaymentMethod[] = [
     number: "081386180787",
     holder: "Nuralifyamaulidah",
   },
+  {
+    method: "COD",
+    number: "085975343039",
+    holder: "SMANSA jam 2 - 3"
+  }
 ]

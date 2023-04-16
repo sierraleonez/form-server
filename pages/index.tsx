@@ -31,7 +31,7 @@ import { useFormik } from "formik";
 import { boolean, number, object, string } from "yup";
 import { PaymentMethods } from "@/constant/paymentMethod";
 import { uploadManager } from "@/helper/imageUpload";
-import ReactMarkdown from 'react-markdown'
+import ReactMarkdown from "react-markdown";
 import Image from "next/image";
 import { info_markdown } from "@/constant/markdown";
 import saveAs from "file-saver";
@@ -84,7 +84,7 @@ export default function Home() {
         participantId: Number(selectedName.split("-")[0]),
         paymentMethod: data.paymentMethod,
         paymentPicUrl: imageUrl,
-        foodOption: data.foodOption
+        foodOption: data.foodOption,
       };
       Fetcher.post("/form", payload)
         .then((res) => {
@@ -121,7 +121,7 @@ export default function Home() {
     phoneNumber: number(),
     available: boolean().required("Please fill your availability"),
     paymentMethod: string().required("Silahkan isi metode pembayaran"),
-    foodOption: string().required("Silahkan memilih menu makanan")
+    foodOption: string().required("Silahkan memilih menu makanan"),
   });
 
   const formik = useFormik({
@@ -130,7 +130,7 @@ export default function Home() {
       email: "",
       phoneNumber: "",
       paymentMethod: "",
-      foodOption: ""
+      foodOption: "",
     },
     onSubmit: (res) => postFormData(res),
     validationSchema: validationSchema,
@@ -199,7 +199,9 @@ export default function Home() {
             </Select>
           </FormControl>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Mau makan apa?</InputLabel>
+            <InputLabel id="demo-simple-select-label">
+              Mau makan apa?
+            </InputLabel>
             <Select
               labelId="demo-simple-select-label"
               onChange={formik.handleChange}
@@ -212,8 +214,10 @@ export default function Home() {
               value={formik.values.foodOption}
               defaultValue={""}
             >
-              {FoodOption.map(opt => (
-                <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+              {FoodOption.map((opt) => (
+                <MenuItem key={opt} value={opt}>
+                  {opt}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -273,11 +277,30 @@ export default function Home() {
               ))}
             </Select>
           </FormControl>
-          <h4 className="text-black">Upload Bukti Pembayaran</h4>
-          <Button variant="contained" color="info" component="label">
-            Upload
-            <input hidden accept="image/*" type="file" onChange={uploadImage} />
-          </Button>
+          <div className="space-y-4 mb-4">
+            <h4 className="text-black">Upload Bukti Pembayaran</h4>
+            {formik.values.paymentMethod === "COD" && (
+              <Typography className="text-red-700">
+                *Untuk metode pembayaran COD tidak wajib upload bukti pembayaran
+              </Typography>
+            )}
+
+            <div className="flex-row flex items-center space-x-4">
+              <Button variant="contained" color="info" component="label">
+                {imageUrl ? "Edit Image" : "Upload Image"}
+                <input
+                  hidden
+                  accept="image/*"
+                  type="file"
+                  onChange={uploadImage}
+                />
+              </Button>
+
+              {imageUrl && (
+                <Typography className="text-black">{imageUrl}</Typography>
+              )}
+            </div>
+          </div>
         </div>
         <div className="space-y-4 mt-4">
           <h3 className="text-black">Informasi</h3>
@@ -343,9 +366,18 @@ function EventDetail() {
       <AccordionDetails className="space-y-4">
         <ReactMarkdown>{info_markdown}</ReactMarkdown>
         <h3>WAJIB DOWNLOAD INVITATION DIBAWAH DAN UPLOAD INVITATION KE IG</h3>
-        <Button variant="contained" startIcon={<Download/>} onClick={() => { saveAs("https://upcdn.io/12a1y8c/raw/uploads/2023/04/Invitation%20Card%20Fix.jpg", `invitation.jpg`) }}>
-						<Typography className="text-black">Download INVITATION</Typography>
-					</Button>
+        <Button
+          variant="contained"
+          startIcon={<Download />}
+          onClick={() => {
+            saveAs(
+              "https://upcdn.io/12a1y8c/raw/uploads/2023/04/Invitation%20Card%20Fix.jpg",
+              `invitation.jpg`
+            );
+          }}
+        >
+          <Typography className="text-black">Download INVITATION</Typography>
+        </Button>
       </AccordionDetails>
     </Accordion>
   );

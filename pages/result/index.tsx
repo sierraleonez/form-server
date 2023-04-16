@@ -12,6 +12,7 @@ import { Download } from '@mui/icons-material'
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { saveAs } from 'file-saver'
+import Image from "next/image";
 
 function Result() {
 	const columns: GridColDef[] = useMemo(() => [
@@ -64,10 +65,11 @@ function Result() {
 				<DialogTitle>Bukti Pembayaran</DialogTitle>
 				<DialogContent>
 					<div className="space-y-4">
-					<img
+					<Image
 						src={selectedImage}
-						width={"100%"}
-						height={'auto'}
+						alt="bukti_pembayaran"
+						width={320}
+						height={640}
 					/>
 					<Button variant="contained" startIcon={<Download/>} onClick={() => { saveAs(selectedImage, `bukti-pembayaran-${Date.now()}`) }}>
 						<Typography>Download</Typography>
